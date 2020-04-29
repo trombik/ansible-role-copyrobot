@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-copyrobot
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ copyrobot_log_dir }}"
+    mode: 0755
+    owner: "{{ copyrobot_user }}"
+    group: "{{ copyrobot_group }}"
+    state: directory
+  notify: Restart copyrobot
+
+- name: Create db directory
+  file:
+    path: "{{ copyrobot_db_dir }}"
+    mode: 0755
+    owner: "{{ copyrobot_user }}"
+    group: "{{ copyrobot_group }}"
+    state: directory
+  notify: Restart copyrobot
+
+- name: Create copyrobot.conf
+  template:
+    src: copyrobot.conf.j2
+    dest: "{{ copyrobot_conf_file }}"
+    validate: echo %s
+  notify: Restart copyrobot
+
+- name: Start copyrobot
+  service:
+    name: "{{ copyrobot_service }}"
+    enabled: true
+    state: started

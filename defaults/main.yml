@@ -1,0 +1,9 @@
+---
+copyrobot_user: copyrobot
+copyrobot_group: copyrobot
+copyrobot_log_dir: /var/log/copyrobot
+copyrobot_db_dir: "{{ __copyrobot_db_dir }}"
+copyrobot_service: copyrobot
+copyrobot_conf_dir: "{{ __copyrobot_conf_dir }}"
+copyrobot_conf_file: "{{ __copyrobot_conf_dir }}/copyrobot.conf"
+copyrobot_flags: ""

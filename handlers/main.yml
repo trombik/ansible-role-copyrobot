@@ -1,0 +1,6 @@
+---
+
+- name: Restart copyrobot
+  service:
+    name: copyrobot
+    state: restarted
