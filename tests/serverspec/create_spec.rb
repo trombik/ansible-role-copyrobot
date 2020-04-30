@@ -49,14 +49,6 @@ users.each do |u|
     it { should be_mode 700 }
   end
 
-  describe file "#{home_base_dir}/#{u[:name]}/.ssh/authorized_keys" do
-    it { should exist }
-    it { should be_file }
-    it { should be_owned_by u[:name] }
-    it { should be_grouped_into u[:group] }
-    it { should be_mode 600 }
-  end
-
   describe file "#{home_base_dir}/#{u[:name]}/.ssh/id_rsa" do
     it { should exist }
     it { should be_file }

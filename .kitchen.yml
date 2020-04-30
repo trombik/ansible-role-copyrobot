@@ -33,10 +33,17 @@ platforms:
         ansible_python_interpreter: '/usr/local/bin/python3'
 
 suites:
-  - name: default
+  - name: create
     provisioner:
       name: ansible_playbook
-      playbook: tests/serverspec/default.yml
+      playbook: tests/serverspec/create.yml
     verifier:
       name: shell
-      command: rspec -c -f d -I tests/serverspec tests/serverspec/default_spec.rb
+      command: rspec -c -f d -I tests/serverspec tests/serverspec/create_spec.rb
+  - name: upload
+    provisioner:
+      name: ansible_playbook
+      playbook: tests/serverspec/upload.yml
+    verifier:
+      name: shell
+      command: rspec -c -f d -I tests/serverspec tests/serverspec/upload_spec.rb
