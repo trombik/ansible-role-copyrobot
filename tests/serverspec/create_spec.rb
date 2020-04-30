@@ -3,20 +3,21 @@ require "serverspec"
 
 
 cache_dir = "/var/cache/copyrobot"
+nobody = case os[:family]
+         when "ubuntu"
+           "nogroup"
+         else
+           "nobody"
+         end
 users = [
   {
     name: "_sshkey",
     group: "_sshkey",
-    groups: ["nobody"],
+    groups: [nobody]
   }
 ]
 shell = "/bin/sh"
-home_base_dir = case os[:family]
-           when "freebsd"
-             "/home"
-           else
-             "/usr/home"
-           end
+home_base_dir = "/home"
 
 users.each do |u|
   describe group u[:group] do |g|

@@ -14,7 +14,8 @@
         user:
           group: _sshkey
           groups:
-            - nobody
+            - "{% if ansible_os_family == 'Debian' %}nogroup{% else %}nobody{% endif %}"
           generate_ssh_key: yes
           shell: /bin/sh
+          create_home: yes
 

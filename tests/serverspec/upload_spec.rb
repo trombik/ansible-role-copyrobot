@@ -11,12 +11,7 @@ users = [
   }
 ]
 shell = "/bin/sh"
-home_base_dir = case os[:family]
-           when "freebsd"
-             "/home"
-           else
-             "/usr/home"
-           end
+home_base_dir = "/home"
 
 users.each do |u|
   describe group u[:group] do |g|
