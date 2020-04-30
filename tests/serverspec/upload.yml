@@ -33,8 +33,7 @@
     - name: Create public key
       copy:
         dest: "{{ copyrobot_local_tmp_dir }}/_sshkey.public"
-        content: |
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxANbNS+osxqIKnXic08pkV1hwaFjboRrSo8CD6SDTOkZ9ENkC5SAAzO8Vew3Jw603fyTeOWL+zO4Sv0CR6156sNieSujH84WQLXB0FWHC69iv4xHyDcrBxkn9ElNO1fuJpkURG92Iranr9OZ/PV9bejIynL/t3vm88gYnKCEhx7zrmA2QRXi1XtzOyMwUNxVudjjeREl60nskONpU6P+WgEW7vpfeGSeWRJ2ygRdm9bK0+gDnpdqlyYWodDjWMjUprA/p4FBgjz76Y0o1zk5TSEJLFuWEprlrOcBanFsDXV9SM0N6FRACp/WL8rt4pG7uHJResx1hYSxkbwbEPDOZ ansible-generated on create-freebsd-121-amd64.vagrantup.com
+        content: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxANbNS+osxqIKnXic08pkV1hwaFjboRrSo8CD6SDTOkZ9ENkC5SAAzO8Vew3Jw603fyTeOWL+zO4Sv0CR6156sNieSujH84WQLXB0FWHC69iv4xHyDcrBxkn9ElNO1fuJpkURG92Iranr9OZ/PV9bejIynL/t3vm88gYnKCEhx7zrmA2QRXi1XtzOyMwUNxVudjjeREl60nskONpU6P+WgEW7vpfeGSeWRJ2ygRdm9bK0+gDnpdqlyYWodDjWMjUprA/p4FBgjz76Y0o1zk5TSEJLFuWEprlrOcBanFsDXV9SM0N6FRACp/WL8rt4pG7uHJResx1hYSxkbwbEPDOZ ansible-generated on create-freebsd-121-amd64.vagrantup.com"  # noqa 204
 
     - name: Create secret key
       copy:

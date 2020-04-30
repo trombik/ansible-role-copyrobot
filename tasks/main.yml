@@ -85,9 +85,8 @@
     - name: Set mode on secret key file
       # XXX `fetch` module does not support `mode`
       # https://github.com/ansible/ansible/issues/62147
-      local_action:
-        module: file
-        path: "{{ copyrobot_local_tmp_dir}}/{{ item['name'] }}.secret"
+      file:
+        path: "{{ copyrobot_local_tmp_dir }}/{{ item['name'] }}.secret"
         mode: '0600'
       delegate_to: 127.0.0.1
       with_items: "{{ copyrobot_users }}"
