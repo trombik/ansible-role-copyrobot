@@ -1,6 +1,0 @@
----
-
-- name: Install copyrobot
-  pkgng:
-    name: copyrobot
-    state: present
