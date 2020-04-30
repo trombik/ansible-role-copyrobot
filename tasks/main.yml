@@ -3,35 +3,95 @@
 
 - include_vars: "{{ ansible_os_family }}.yml"
 
-- include: "install-{{ ansible_os_family }}.yml"
-
-- name: Create log directory
+- name: Create copyrobot_local_tmp_dir
   file:
-    path: "{{ copyrobot_log_dir }}"
-    mode: 0755
-    owner: "{{ copyrobot_user }}"
-    group: "{{ copyrobot_group }}"
     state: directory
-  notify: Restart copyrobot
+    path: "{{ copyrobot_local_tmp_dir }}"
+    mode: '0700'
 
-- name: Create db directory
+- name: Create primary groups for copyrobot_users
+  group:
+    name: "{{ item['user']['group'] }}"
+  with_items: "{{ copyrobot_users }}"
+  when:
+    - inventory_hostname == item['create_on']
+    - "'group' in item['user']"
+
+- name: Create copyrobot_users
+  user:
+    append: "{{ item['user']['append'] | default(omit) }}"
+    authorization: "{{ item['user']['authorization'] | default(omit) }}"
+    comment: "{{ item['user']['comment'] | default(omit) }}"
+    create_home: "{{ item['user']['create_home'] | default(omit) }}"
+    expires: "{{ item['user']['expires'] | default(omit) }}"
+    force: "{{ item['user']['force'] | default(omit) }}"
+    generate_ssh_key: "{% if inventory_hostname == item['create_on'] %}yes{% else %}no{% endif %}"
+    group: "{{ item['user']['group'] | default(omit) }}"
+    groups: "{{ item['user']['groups'] | default(omit) }}"
+    hidden: "{{ item['user']['hidden'] | default(omit) }}"
+    home: "{{ item['user']['home'] | default(omit) }}"
+    local: "{{ item['user']['local'] | default(omit) }}"
+    login_class: "{{ item['user']['login_class'] | default(omit) }}"
+    move_home: "{{ item['user']['move_home'] | default(omit) }}"
+    name: "{{ item['name'] }}"
+    non_unique: "{{ item['user']['non_unique'] | default(omit) }}"
+    password: "{{ item['user']['password'] | default(omit) }}"
+    password_lock: "{{ item['user']['password_lock'] | default(omit) }}"
+    profile: "{{ item['user']['profile'] | default(omit) }}"
+    remove: "{{ item['user']['remove'] | default(omit) }}"
+    role: "{{ item['user']['role'] | default(omit) }}"
+    seuser: "{{ item['user']['seuser'] | default(omit) }}"
+    shell: "{{ item['user']['shell'] | default(omit) }}"
+    skeleton: "{{ item['user']['skeleton'] | default(omit) }}"
+    ssh_key_bits: "{{ item['user']['ssh_key_bits'] | default(omit) }}"
+    ssh_key_comment: "{{ item['user']['ssh_key_comment'] | default(omit) }}"
+    ssh_key_file: "{{ item['user']['ssh_key_file'] | default(omit) }}"
+    ssh_key_passphrase: "{{ item['user']['ssh_key_passphrase'] | default(omit) }}"
+    ssh_key_type: "{{ item['user']['ssh_key_type'] | default(omit) }}"
+    state: present
+    system: "{{ item['user']['system'] | default(omit) }}"
+    uid: "{{ item['user']['uid'] | default(omit) }}"
+    update_password: "{{ item['user']['update_password'] | default(omit) }}"
+  with_items: "{{ copyrobot_users }}"
+
+- name: Create copyrobot_local_tmp_dir on local machine
   file:
-    path: "{{ copyrobot_db_dir }}"
-    mode: 0755
-    owner: "{{ copyrobot_user }}"
-    group: "{{ copyrobot_group }}"
     state: directory
-  notify: Restart copyrobot
+    path: "{{ copyrobot_local_tmp_dir }}"
+    mode: '0700'
+  delegate_to: localhost
 
-- name: Create copyrobot.conf
-  template:
-    src: copyrobot.conf.j2
-    dest: "{{ copyrobot_conf_file }}"
-    validate: echo %s
-  notify: Restart copyrobot
+- name: Get users information from passwd database
+  # getent_passwd contains all information of users
+  getent:
+    database: passwd
+    split: ":"
+  with_items: "{{ copyrobot_users }}"
 
-- name: Start copyrobot
-  service:
-    name: "{{ copyrobot_service }}"
-    enabled: true
-    state: started
+- name: Get ssh secret key from remote machine to local machine
+  fetch:
+    src: "{{ getent_passwd[item['name']][4] }}/.ssh/id_rsa"
+    dest: "{{ copyrobot_local_tmp_dir }}/{{ item['name'] }}.secret"
+    flat: yes
+  with_items: "{{ copyrobot_users }}"
+  when:
+    - inventory_hostname in item['create_on']
+
+- name: Set mode on secret key file
+  # XXX `fetch` module does not support `mode`
+  # https://github.com/ansible/ansible/issues/62147
+  local_action:
+    module: file
+    path: "{{ copyrobot_local_tmp_dir}}/{{ item['name'] }}.secret"
+    mode: '0600'
+  delegate_to: 127.0.0.1
+  with_items: "{{ copyrobot_users }}"
+
+- name: Get ssh public key from remote machine to local machine
+  fetch:
+    src: "{{ getent_passwd[item['name']][4] }}/.ssh/id_rsa.pub"
+    dest: "{{ copyrobot_local_tmp_dir }}/{{ item['name'] }}.public"
+    flat: yes
+  with_items: "{{ copyrobot_users }}"
+  when:
+    - inventory_hostname == item['create_on']

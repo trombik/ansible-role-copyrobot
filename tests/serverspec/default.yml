@@ -3,4 +3,17 @@
   roles:
     - ansible-role-copyrobot
   vars:
-    copyrobot_config: ""
+    copyrobot_local_tmp_dir: "/var/cache/copyrobot"
+    copyrobot_users:
+      - name: _sshkey
+        create_on: localhost
+        secret_key_hosts:
+          - localhost
+        public_key_hosts:
+          - localhost
+        user:
+          group: _sshkey
+          groups:
+            - nobody
+          generate_ssh_key: yes
+          shell: /bin/sh
